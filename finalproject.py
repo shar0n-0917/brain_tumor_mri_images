@@ -54,3 +54,23 @@ net = jetson_inference.imageNet(network=opt.network, model=opt.model, labels=opt
 class_idx, confidence = net.Classify(img)
 class_desc = net.GetClassDesc(class_idx)
 print("MRI image shows "+ str(class_desc) +" (class #"+ str(class_idx) +") with " + str(confidence*100)+"% confidence")
+
+
+
+# --- ADD THIS TO OVERLAY AND SAVE THE IMAGE ---
+
+# Create the overlay text
+overlay_text = f"{class_desc} ({confidence * 100:.2f}%)"
+
+# Draw the overlay text on the image (top-left corner at x=10, y=10)
+font = jetson_utils.cudaFont()
+
+#font.OverlayText(img, 10, 10, overlay_text, 32, (255, 255, 255, 255), (0, 0, 0, 160))
+font.OverlayText(img, img.width, img.height, overlay_text, 10,10, font.Red)
+
+# Define output filename (can customize or generate dynamically)
+output_filename = "classified_output.jpg"
+
+# Save the image with the overlay
+jetson_utils.saveImage(output_filename, img)
+print(f"Image saved with overlay as: {output_filename}")
